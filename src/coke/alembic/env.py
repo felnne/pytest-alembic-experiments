@@ -8,7 +8,7 @@ config = context.config
 
 # interpret the config file for Python logging.
 if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+    fileConfig(config.config_file_name, disable_existing_loggers=False)
 
 # add your model's MetaData object here for 'autogenerate' support e.g.:
 # ```
@@ -47,14 +47,17 @@ def run_migrations_online() -> None:
 
     In this scenario we need to create an Engine and associate a connection with the context.
     """
-    connectable = engine_from_config(
-        config.get_section(config.config_ini_section),
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
-    )
+    connectable = context.config.attributes.get("connection", None)
+
+    if connectable is None:
+        connectable = engine_from_config(
+            context.config.get_section(context.config.config_ini_section),
+            prefix="sqlalchemy.",
+            poolclass=pool.NullPool,
+        )
 
     with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
+        context.configure(connection=connection, target_metadata=target_metadata, compare_type=True, compare_server_default=True, include_schemas=True)
 
         with context.begin_transaction():
             context.run_migrations()
