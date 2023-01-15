@@ -31,8 +31,10 @@ $ SQLALCHEMY_SILENCE_UBER_WARNING=1 poetry run pytest
 ## Notes:
 
 * once DSN removed from `alembic.ini`, all other config options are either static (package location) or defaults
+* offline mode is where Alembic generates SQL statements to run standalone, rather than Alembic modifying the DB
+* if DDL test fails, you can generate an automatic migration to see what's missing [1]
 
-If DDL test fails, you can generate an automatic migration to see what's missing:
+[1]
 
 ```
 $ poetry run alembic upgrade head
@@ -44,13 +46,19 @@ If SQLAlchemy models are not as up to date as the Alembic models, the upgrade/do
 ## TODO:
 
 - [x]  SQLAlchemy tests
-- [ ]  Pytest-alembic experimental tests
-- [ ]  More realistic tests (i.e. from locations register)
+- [x]  Does the rolled back in the DB fixture mean we don't need migrations to be run, as it doesn't touch the DB?
+    - no, committing the session actually modifies the DB
+- [x]  what is 'offline mode' in Alembic?
+  - where Alembic generates SQL to run externally 
+- [x]  DSN is defined multiple times [1]
 - [ ]  GitLab CI
-- [ ]  DSN is defined multiple times [1]
-- [ ]  Does the rolled back in the DB fixture mean we don't need migrations to be run, as it doesn't touch the DB?
+
+Next:
+
+- [ ]  More realistic tests (i.e. from locations register)
+- [ ]  Pytest-alembic experimental tests
 
 [1]
 
-* `alembic.ini`
+* ~~`alembic.ini`~~
 * `src/pytest_alembic_exp/db.py`

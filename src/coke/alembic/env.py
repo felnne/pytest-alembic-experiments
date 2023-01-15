@@ -1,40 +1,36 @@
 from logging.config import fileConfig
+from pathlib import Path
 
 from alembic import context
-from sqlalchemy import engine_from_config, pool
+from importlib_resources import as_file as resource_path_as_file, files as resource_path
 
+from coke.config import db_dsn
 from coke.db import Base as MetadataBase
 
-# this is the Alembic Config object, which provides access to the values within the .ini file in use.
+# Load base Alembic config
 config = context.config
 
-# interpret the config file for Python logging.
-if config.config_file_name is not None:
-    fileConfig(config.config_file_name, disable_existing_loggers=False)
-
-# add your model's MetaData object here for 'autogenerate' support e.g.:
-# ```
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-# ```
+# Set SQLAlchemy metadata instance, used for 'autogenerate' support
 target_metadata = MetadataBase.metadata
 
-# other values from the config, defined by the needs of env.py, can be acquired:
-# e.g. `my_important_option = config.get_main_option("my_important_option")`
+
+def get_alembic_logging_path() -> Path:
+    """Generate path to logging config file from within application package."""
+    with resource_path_as_file(resource_path("coke.alembic")) as alembic_path:
+        return Path(alembic_path).joinpath('logging.ini')
 
 
 def run_migrations_offline() -> None:
     """
     Run migrations in 'offline' mode.
 
-    This configures the context with just a URL and not an Engine, though an Engine is acceptable here as well.
-    By skipping the Engine creation we don't need a DBAPI to be available.
+    In this mode Alembic generates SQL statements to be run elsewhere (i.e. by an external DBA). SQL that would be
+    normally be executed against the DB is emitted as script output.
 
-    Calls to context.execute() here emit the given string to the script output.
+    Alembic's context is configured with a URL, rather than an Engine, which doesn't require the DB to be accessible.
     """
-    url = config.get_main_option("sqlalchemy.url")
     context.configure(
-        url=url,
+        url=db_dsn,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -45,27 +41,36 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode.
+    """
+    Run migrations in 'online' mode.
 
-    In this scenario we need to create an Engine and associate a connection with the context.
+    In this mode Alembic executes SQL statements against the DB directly
+
+    Alembic's context is configured with an Engine and an associated DB connection to do this.
     """
     connectable = context.config.attributes.get("connection", None)
 
-    if connectable is None:
-        connectable = engine_from_config(
-            context.config.get_section(context.config.config_ini_section),
-            prefix="sqlalchemy.",
-            poolclass=pool.NullPool,
-        )
-
     with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata, compare_type=True, compare_server_default=True, include_schemas=True)
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+            compare_type=True,
+            compare_server_default=True,
+            include_schemas=True,
+        )
 
         with context.begin_transaction():
             context.run_migrations()
 
 
+# Setup Alembic logging from application package
+fileConfig(fname=get_alembic_logging_path(), disable_existing_loggers=False)
+
 if context.is_offline_mode():
     run_migrations_offline()
 else:
     run_migrations_online()
+
+
+# other values from the config, defined by the needs of env.py, can be acquired:
+# e.g. `my_important_option = config.get_main_option("my_important_option")`

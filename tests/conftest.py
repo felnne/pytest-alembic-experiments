@@ -1,13 +1,13 @@
 import pytest
 
-from coke.db import engine as app_engine, Session as app_session
+from coke.db import Engine as DBEngine, Session as DBSession
 
 
 @pytest.fixture
 def alembic_engine():
     """Override this fixture to provide pytest-alembic powered tests with a database handle.
     """
-    return app_engine
+    return DBEngine
 
 
 @pytest.fixture
@@ -39,7 +39,7 @@ def db_session(alembic_runner_ephmrl_head):
     """
     Create SQLAlchemy SQL with migrated database
     """
-    session = app_session()
+    session = DBSession()
     yield session
     session.rollback()
     session.close()

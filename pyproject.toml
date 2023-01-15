@@ -11,6 +11,7 @@ packages = [{include = "coke"}]
 python = "^3.8"
 pytest-alembic = "^0.9.1"
 psycopg2 = "^2.9.5"
+importlib-resources = "^5.10.2"  # backport
 
 
 [build-system]
