@@ -12,6 +12,7 @@ Check things work manually:
 
 ```
 $ poetry run alembic upgrade head
+$ poetry run python -m coke
 $ poetry run alembic downgrade base
 ```
 
@@ -37,3 +38,4 @@ DSN is defined twice in:
 
 * `alembic.ini`
 * `tests/conftest.py`
+* `src/pytest_alembic_exp/main.py`
