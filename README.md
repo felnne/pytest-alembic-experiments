@@ -1,11 +1,9 @@
 # Pytest-Alembic Experiments
 
-```
-$ psql -d postgres
-```
+Reset DB:
 
-```sql
-$ create database pytest_alembic;
+```
+$ psql -d postgres -c 'DROP DATABASE IF EXISTS pytest_alembic;' && psql -d postgres -c 'CREATE DATABASE pytest_alembic;'
 ```
 
 ```
