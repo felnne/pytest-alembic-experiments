@@ -12,7 +12,7 @@ Check things work manually:
 
 ```
 $ poetry run alembic upgrade head
-$ poetry run python -m coke
+$ SQLALCHEMY_SILENCE_UBER_WARNING=1 poetry run python -m coke
 $ poetry run alembic downgrade base
 ```
 
@@ -25,7 +25,7 @@ $ psql -d postgres -c 'DROP DATABASE IF EXISTS pytest_alembic;' && psql -d postg
 Run tests:
 
 ```
-$ poetry run pytest
+$ SQLALCHEMY_SILENCE_UBER_WARNING=1 poetry run pytest
 ```
 
 ## Notes:

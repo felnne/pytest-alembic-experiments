@@ -11,5 +11,7 @@ def alembic_engine():
 
 @pytest.fixture
 def ephemeral_alembic_runner(alembic_runner):
+    """Ensure all tests start and end at base migration."""
+    alembic_runner.migrate_down_to('base')
     yield alembic_runner
     alembic_runner.migrate_down_to('base')

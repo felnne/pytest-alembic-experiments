@@ -19,6 +19,7 @@ depends_on = None
 
 table_name = "foo"
 
+
 def upgrade() -> None:
     op.create_table(
         table_name,

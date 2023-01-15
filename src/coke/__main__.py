@@ -10,9 +10,12 @@ base.metadata.create_all(engine)
 
 class Foo(base):
     __tablename__ = 'foo'
+    __table_args__ = {
+        'comment': 'Foo'
+    }
 
     id = Column("id", Integer, Identity(), primary_key=True, comment="ID")
-    label = Column("label", Text, nullable=False)
+    label = Column("label", Text, nullable=False, comment='Label')
 
     def __repr__(self):
         return f"<Foo [{self.id}] '{self.label}'>"
