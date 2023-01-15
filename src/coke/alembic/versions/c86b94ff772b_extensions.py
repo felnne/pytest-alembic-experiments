@@ -17,9 +17,9 @@ depends_on = None
 
 def upgrade() -> None:
     pass
-    # op.execute(sa.text("CREATE EXTENSION IF NOT EXISTS postgis;"))
+    op.execute(sa.text("CREATE EXTENSION IF NOT EXISTS postgis;"))
 
 
 def downgrade() -> None:
     pass
-    # op.execute(sa.text("DROP EXTENSION IF EXISTS postgis;"))
+    op.execute(sa.text("DROP EXTENSION IF EXISTS postgis;"))

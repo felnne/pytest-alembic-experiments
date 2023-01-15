@@ -32,6 +32,15 @@ $ SQLALCHEMY_SILENCE_UBER_WARNING=1 poetry run pytest
 
 * once DSN removed from `alembic.ini`, all other config options are either static (package location) or defaults
 
+If DDL test fails, you can generate an automatic migration to see what's missing:
+
+```
+$ poetry run alembic upgrade head
+$ poetry run alembic revision --autogenerate
+```
+
+If SQLAlchemy models are not as up to date as the Alembic models, the upgrade/downgrade steps will be flipped around.
+
 ## TODO:
 
 DSN is defined twice in:
