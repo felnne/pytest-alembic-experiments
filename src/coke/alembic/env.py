@@ -3,7 +3,7 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-from coke.__main__ import base as metadata_base
+from coke.db import Base as MetadataBase
 
 # this is the Alembic Config object, which provides access to the values within the .ini file in use.
 config = context.config
@@ -17,7 +17,7 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 # ```
-target_metadata = metadata_base.metadata
+target_metadata = MetadataBase.metadata
 
 # other values from the config, defined by the needs of env.py, can be acquired:
 # e.g. `my_important_option = config.get_main_option("my_important_option")`

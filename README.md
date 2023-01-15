@@ -43,8 +43,14 @@ If SQLAlchemy models are not as up to date as the Alembic models, the upgrade/do
 
 ## TODO:
 
-DSN is defined twice in:
+- [x]  SQLAlchemy tests
+- [ ]  Pytest-alembic experimental tests
+- [ ]  More realistic tests (i.e. from locations register)
+- [ ]  GitLab CI
+- [ ]  DSN is defined multiple times [1]
+- [ ]  Does the rolled back in the DB fixture mean we don't need migrations to be run, as it doesn't touch the DB?
+
+[1]
 
 * `alembic.ini`
-* `tests/conftest.py`
-* `src/pytest_alembic_exp/main.py`
+* `src/pytest_alembic_exp/db.py`
