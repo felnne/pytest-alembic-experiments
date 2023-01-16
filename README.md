@@ -39,6 +39,9 @@ $ APP_DB_DSN=postgresql://felnne@localhost/pytest_alembic SQLALCHEMY_SILENCE_UBE
 * once DSN removed from `alembic.ini`, all other config options are either static (package location) or defaults
 * offline mode is where Alembic generates SQL statements to run standalone, rather than Alembic modifying the DB
 * if DDL test fails, you can generate an automatic migration to see what's missing [1]
+* in CI, Alembic fails because the official PostGIS image includes more than just the PostGIS extension (tiger etc.)
+  * rather than create a new image etc. it may be easiest to add `psql` in the app container and drop extra extensions?
+  * see https://github.com/postgis/docker-postgis/issues/187 for changing image to not add these extensions by default
 
 [1]
 

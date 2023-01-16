@@ -24,17 +24,11 @@ image:
 stages:
   - 🧪 test
 
-test_pg:
-  stage: 🧪 test
-  image: postgres:14-alpine
-  script:
-    # official way to provide password to psql: http://www.postgresql.org/docs/9.3/static/libpq-envars.html
-    - export PGPASSWORD=$POSTGRES_PASSWORD
-    - psql -h $POSTGRES_HOST -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT 'OK' AS status;"
-
 test:
   stage: 🧪 test
   before_script:
+    # best practice way to provide password to psql: http://www.postgresql.org/docs/9.3/static/libpq-envars.html
+    - export PGPASSWORD=$POSTGRES_PASSWORD
     - export PATH="/root/.local/bin:$PATH"
     - python --version
     - python -m pip install --upgrade pip
@@ -45,6 +39,11 @@ test:
     - poetry config virtualenvs.in-project true
     - poetry install --no-interaction --no-ansi --no-root
     - echo "$CI_PROJECT_DIR/src" > .venv/lib/python3.8/site-packages/coke.pth
+    - apt-get update
+    - apt-get install -y postgresql-client
+    - psql -h $POSTGRES_HOST -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT 'OK' AS status;"
+    - psql -h $POSTGRES_HOST -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "DROP EXTENSION IF EXISTS postgis_tiger_geocoder;"
+    - psql -h $POSTGRES_HOST -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "DROP EXTENSION IF EXISTS postgis_topology;"
   script:
     - poetry run python -m coke.config
     - poetry run pytest
