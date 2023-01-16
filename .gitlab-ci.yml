@@ -1,0 +1,42 @@
+---
+
+services:
+  - postgis/postgis:14-3.3-alpine
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  SQLALCHEMY_SILENCE_UBER_WARNING: 1
+  POSTGRES_HOST: postgres
+  POSTGRES_DB: test
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: password
+  POSTGRES_HOST_AUTH_METHOD: trust
+  APP_DB_DSN: "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB"
+
+cache:
+  paths:
+    - .cache/pip  # for pipx/pip
+    - .venv/   # for project dependencies
+
+image:
+  name: python:3.8
+
+stages:
+  - 🧪 test
+
+before_script:
+  - export PATH="/root/.local/bin:$PATH"
+  - python --version
+  - python -m pip install --upgrade pip
+  - python -m pip install pipx
+  - python -m pipx install poetry==1.3.2
+  - poetry --version
+  - poetry check
+  - poetry config virtualenvs.in-project true
+  - poetry install --no-interaction --no-ansi
+
+test:
+  stage: 🧪 test
+  script:
+    - poetry run python -m coke.config
+    - poetry run pytest

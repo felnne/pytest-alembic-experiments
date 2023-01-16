@@ -11,9 +11,9 @@ $ psql -d postgres -c 'CREATE DATABASE pytest_alembic;'
 Check things work manually:
 
 ```
-$ poetry run alembic upgrade head
-$ SQLALCHEMY_SILENCE_UBER_WARNING=1 poetry run python -m coke
-$ poetry run alembic downgrade base
+$ APP_DB_DSN=postgresql://felnne@localhost/pytest_alembic poetry run alembic upgrade head
+$ SQLALCHEMY_SILENCE_UBER_WARNING=1 APP_DB_DSN=postgresql://felnne@localhost/pytest_alembic poetry run python -m coke
+$ APP_DB_DSN=postgresql://felnne@localhost/pytest_alembic poetry run alembic downgrade base
 ```
 
 Reset DB:
@@ -22,10 +22,16 @@ Reset DB:
 $ psql -d postgres -c 'DROP DATABASE IF EXISTS pytest_alembic;' && psql -d postgres -c 'CREATE DATABASE pytest_alembic;'
 ```
 
+Check DB DSN environment variable set correctly:
+
+```
+$ APP_DB_DSN=postgresql://felnne@localhost/pytest_alembic poetry run python -m coke.config
+```
+
 Run tests:
 
 ```
-$ SQLALCHEMY_SILENCE_UBER_WARNING=1 poetry run pytest
+$ APP_DB_DSN=postgresql://felnne@localhost/pytest_alembic SQLALCHEMY_SILENCE_UBER_WARNING=1 poetry run pytest
 ```
 
 ## Notes:
