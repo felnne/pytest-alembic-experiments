@@ -33,7 +33,8 @@ before_script:
   - poetry --version
   - poetry check
   - poetry config virtualenvs.in-project true
-  - poetry install --no-interaction --no-ansi
+  - poetry install --no-interaction --no-ansi --no-root
+  - echo "$CI_PROJECT_DIR/src" > .venv/lib/python3.8/site-packages/coke.pth
 
 test:
   stage: 🧪 test
