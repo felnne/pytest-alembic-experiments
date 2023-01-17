@@ -64,8 +64,8 @@ CI:
 [1]
 
 ```
-$ poetry run alembic upgrade head
-$ poetry run alembic revision --autogenerate
+$ APP_DB_DSN=postgresql://felnne@localhost/pytest_alembic poetry run alembic upgrade head
+$ APP_DB_DSN=postgresql://felnne@localhost/pytest_alembic poetry run alembic revision --autogenerate
 ```
 
 If SQLAlchemy models are not as up to date as the Alembic models, the upgrade/downgrade steps will be flipped around.

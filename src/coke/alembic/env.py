@@ -5,7 +5,7 @@ from alembic import context
 from importlib_resources import as_file as resource_path_as_file, files as resource_path
 
 from coke.config import db_dsn
-from coke.db import Base as MetadataBase
+from coke.db import Base as MetadataBase, Engine as AppEngine
 
 # Load base Alembic config
 config = context.config
@@ -49,6 +49,8 @@ def run_migrations_online() -> None:
     Alembic's context is configured with an Engine and an associated DB connection to do this.
     """
     connectable = context.config.attributes.get("connection", None)
+    if connectable is None:
+        connectable = AppEngine
 
     with connectable.connect() as connection:
         context.configure(
@@ -70,7 +72,3 @@ if context.is_offline_mode():
     run_migrations_offline()
 else:
     run_migrations_online()
-
-
-# other values from the config, defined by the needs of env.py, can be acquired:
-# e.g. `my_important_option = config.get_main_option("my_important_option")`

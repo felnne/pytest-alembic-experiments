@@ -1,19 +1,24 @@
-from sqlalchemy import Column, Integer, Text, Identity, VARCHAR, PrimaryKeyConstraint, CheckConstraint
+from sqlalchemy import Column, Integer, Text, Identity, VARCHAR, PrimaryKeyConstraint, CheckConstraint, UniqueConstraint
+from sqlalchemy.dialects.postgresql import JSONB
 
 from coke.db import Base
 
 
-class Foo(Base):
-    __tablename__ = 'foo'
-    __table_args__ = {
-        'comment': 'Foo'
-    }
+class Asset(Base):
+    __tablename__ = 'asset'
+    __table_args__ = (
+        UniqueConstraint("fid", name=f"uq_{__tablename__}_fid"),
+        {'comment': 'All assets'}
+    )
 
     id = Column("id", Integer, Identity(), primary_key=True, comment="ID")
+    fid = Column("fid", Text, nullable=False, comment='Feature ID')
     label = Column("label", Text, nullable=False, comment='Label')
+    platform_type = Column("platform_type", Text, nullable=False, comment='Platform type')
+    identifiers = Column("identifiers", JSONB(astext_type=None), comment="Identifiers")
 
     def __repr__(self):
-        return f"<Foo [{self.id}] '{self.label}'>"
+        return f"<Asset ({self.id}) [{self.fid}] '{self.label}' {self.platform_type}>"
 
 
 class PostGISSpatialRefSys(Base):
