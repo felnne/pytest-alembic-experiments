@@ -5,39 +5,48 @@ from coke.db import Engine as DBEngine, Session as DBSession
 
 @pytest.fixture
 def alembic_engine():
-    """Override this fixture to provide pytest-alembic powered tests with a database handle.
+    """
+    Pytest-alembic required fixture.
+
+    Needs to return a database handle.
     """
     return DBEngine
 
 
 @pytest.fixture
-def alembic_runner_ephmrl(alembic_runner):
+def fx_alembic_runner_ephmrl(alembic_runner):
     """
     Ephemeral Alembic runner.
 
-    Ensure all tests start and end at base migration."""
+    Ensures all tests start and end at base migration.
+
+    Inherits from the pytest-alembic provided `alembic_runner` fixture.
+    """
     alembic_runner.migrate_down_to('base')
     yield alembic_runner
     alembic_runner.migrate_down_to('base')
 
 
 @pytest.fixture
-def alembic_runner_ephmrl_head(alembic_runner_ephmrl):
+def fx_alembic_runner_ephmrl_head(fx_alembic_runner_ephmrl):
     """
-    Ephemeral Alembic runner, upgraded to latest migration.
+    Ephemeral Alembic runner, upgraded to the latest migration.
 
     Ensure all tests start with a migrated database and end at base migration.
     """
-    alembic_runner_ephmrl.migrate_up_to('head')
-    yield alembic_runner_ephmrl
-    alembic_runner_ephmrl.migrate_down_to('base')
+    fx_alembic_runner_ephmrl.migrate_up_to('head')
+    yield fx_alembic_runner_ephmrl
+    fx_alembic_runner_ephmrl.migrate_down_to('base')
 
 
 # scope="module"
 @pytest.fixture
-def db_session(alembic_runner_ephmrl_head):
+def fx_db_session(fx_alembic_runner_ephmrl_head):
     """
-    Create SQLAlchemy SQL with migrated database
+    Create SQLAlchemy SQL with migrated database.
+
+    By depending on the `fx_alembic_runner_ephmrl_head` fixture, the DB will be automatically migrated to the latest
+    migration before this fixture takes over, and likewise, downgrade the DB after this fixture completes.
     """
     session = DBSession()
     yield session
