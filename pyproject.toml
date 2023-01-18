@@ -13,6 +13,8 @@ pytest-alembic = "^0.9.1"
 psycopg2 = "^2.9.5"
 importlib-resources = "^5.10.2"  # backport
 ulid-py = "^1.1.0"
+geoalchemy2 = "^0.12.5"
+shapely = "^2.0.0"
 
 
 [build-system]

@@ -39,14 +39,14 @@ def upgrade() -> None:
         sa.Column("platform_type", sa.Text(), nullable=False, comment="Platform type"),
         sa.Column("identifiers", pg.JSONB(astext_type=None), comment="Identifiers"),
         sa.Column(
-            "inserted_at", pg.TIMESTAMP(timezone=True), server_default=UtcNow(), nullable=False, comment="Created at"
+            "inserted_at", pg.TIMESTAMP(timezone=True), server_default=UtcNow(), nullable=False, comment="Row created at"
         ),
         sa.Column(
             "updated_at",
             pg.TIMESTAMP(timezone=True),
             server_default=UtcNow(),
             nullable=False,
-            comment="Last modified at",
+            comment="Row last modified at",
         ),
     ),
     op.create_table_comment(table_name=table_name, comment="All assets")
