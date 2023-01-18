@@ -37,20 +37,18 @@ def upgrade() -> None:
         sa.Column("fid", sa.Text(), nullable=False, comment="Feature ID"),
         sa.Column("label", sa.Text(), nullable=False, comment="Label"),
         sa.Column("platform_type", sa.Text(), nullable=False, comment="Platform type"),
-        # sa.Column("identifiers", pg.JSONB(), comment="Identifiers"),
-        sa.Column("identifiers", pg.JSONB(astext_type=None), comment="Identifiers")
-
-        # sa.Column(
-        #     "inserted_at", pg.TIMESTAMP(timezone=True), server_default=UtcNow(), nullable=False, comment="Created at"
-        # ),
-        # sa.Column(
-        #     "updated_at",
-        #     pg.TIMESTAMP(timezone=True),
-        #     server_default=UtcNow(),
-        #     nullable=False,
-        #     comment="Last modified at",
-        # ),
-    )
+        sa.Column("identifiers", pg.JSONB(astext_type=None), comment="Identifiers"),
+        sa.Column(
+            "inserted_at", pg.TIMESTAMP(timezone=True), server_default=UtcNow(), nullable=False, comment="Created at"
+        ),
+        sa.Column(
+            "updated_at",
+            pg.TIMESTAMP(timezone=True),
+            server_default=UtcNow(),
+            nullable=False,
+            comment="Last modified at",
+        ),
+    ),
     op.create_table_comment(table_name=table_name, comment="All assets")
     op.create_unique_constraint(constraint_name=f"uq_{table_name}_fid", table_name=table_name, columns=["fid"])
 

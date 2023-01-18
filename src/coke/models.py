@@ -1,24 +1,8 @@
-from sqlalchemy import Column, Integer, Text, Identity, VARCHAR, PrimaryKeyConstraint, CheckConstraint, UniqueConstraint
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import Column, Integer, Text, Identity, VARCHAR, PrimaryKeyConstraint, CheckConstraint, \
+    UniqueConstraint, text
+from sqlalchemy.dialects.postgresql import JSONB, TIMESTAMP
 
 from coke.db import Base
-
-
-class Asset(Base):
-    __tablename__ = 'asset'
-    __table_args__ = (
-        UniqueConstraint("fid", name=f"uq_{__tablename__}_fid"),
-        {'comment': 'All assets'}
-    )
-
-    id = Column("id", Integer, Identity(), primary_key=True, comment="ID")
-    fid = Column("fid", Text, nullable=False, comment='Feature ID')
-    label = Column("label", Text, nullable=False, comment='Label')
-    platform_type = Column("platform_type", Text, nullable=False, comment='Platform type')
-    identifiers = Column("identifiers", JSONB(astext_type=None), comment="Identifiers")
-
-    def __repr__(self):
-        return f"<Asset ({self.id}) [{self.fid}] '{self.label}' {self.platform_type}>"
 
 
 class PostGISSpatialRefSys(Base):
@@ -38,3 +22,24 @@ class PostGISSpatialRefSys(Base):
     auth_srid = Column('auth_srid', Integer, autoincrement=False, nullable=True)
     srtext = Column('srtext', VARCHAR(length=2048), autoincrement=False, nullable=True)
     proj4text = Column('proj4text', VARCHAR(length=2048), autoincrement=False, nullable=True)
+
+
+class Asset(Base):
+    __tablename__ = 'asset'
+    __table_args__ = (
+        UniqueConstraint("fid", name=f"uq_{__tablename__}_fid"),
+        {'comment': 'All assets'}
+    )
+
+    id = Column("id", Integer, Identity(), primary_key=True, comment="ID")
+    fid = Column("fid", Text, nullable=False, comment='Feature ID')
+    label = Column("label", Text, nullable=False, comment='Label')
+    platform_type = Column("platform_type", Text, nullable=False, comment='Platform type')
+    identifiers = Column("identifiers", JSONB(astext_type=None), comment="Identifiers")
+    inserted_at = Column("inserted_at", TIMESTAMP(timezone=True), nullable=False,
+                         server_default=text("timezone('utc'::text, CURRENT_TIMESTAMP)"), comment="Created at")
+    updated_at = Column("updated_at", TIMESTAMP(timezone=True), nullable=False,
+                        server_default=text("timezone('utc'::text, CURRENT_TIMESTAMP)"), comment="Last modified at")
+
+    def __repr__(self):
+        return f"<Asset ({self.id}) [{self.fid}] '{self.label}' {self.platform_type}>"
