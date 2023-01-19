@@ -2,6 +2,7 @@ from logging.config import fileConfig
 from pathlib import Path
 
 from alembic import context
+from alembic_utils.replaceable_entity import ReplaceableEntity
 from importlib_resources import as_file as resource_path_as_file, files as resource_path
 
 from coke.config import db_dsn
@@ -12,6 +13,14 @@ config = context.config
 
 # Set SQLAlchemy metadata instance, used for 'autogenerate' support
 target_metadata = MetadataBase.metadata
+
+
+# noinspection PyShadowingBuiltins,PyUnusedLocal
+def include_object(object, name, type_, reflected, compare_to) -> bool:
+    if isinstance(object, ReplaceableEntity):
+        # ignore all resources from `alembic-utils` (views, functions, etc.)
+        return False
+    return True
 
 
 def get_alembic_logging_path() -> Path:
@@ -34,6 +43,7 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        include_object=include_object
     )
 
     with context.begin_transaction():
@@ -59,6 +69,7 @@ def run_migrations_online() -> None:
             compare_type=True,
             compare_server_default=True,
             include_schemas=True,
+            include_object=include_object
         )
 
         with context.begin_transaction():

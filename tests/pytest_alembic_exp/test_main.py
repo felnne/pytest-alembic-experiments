@@ -75,7 +75,7 @@ class TestFoo:
         fx_db_session.query(Asset).filter(Asset.label == _new_label).one()
         assert isinstance(asset1.inserted_at, datetime)
         assert isinstance(asset1.updated_at, datetime)
-        assert asset1.inserted_at == asset1.updated_at
+        assert asset1.inserted_at < asset1.updated_at
 
     def test_asset_delete(self, fx_db_session):
         asset1 = Asset(fid=str(self._fid1), label=self._label, platform_type=self._platform_type)
@@ -191,7 +191,6 @@ class TestFoo:
 
         assert fx_db_session_with_asset.query(AssetPosition).filter(AssetPosition.fid == asset_position1.fid).one_or_none() is None
 
-    # TODO: foreign key
     def test_asset_asset_position_fk(self, fx_db_session):
         asset1 = Asset(
             fid='01GQ02ZSXFX2SEC05PPQR0HFVD',
