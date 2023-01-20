@@ -1,31 +1,48 @@
 # Pytest Alembic Experiments
 
-Experiments using pytest to validate Alembic database migrations
+Experiments using pytest to validate Alembic database migrations.
 
 ## Overview
 
-This experiment uses a very simple database model (a single `Foo` entity with an auto-incrementing ID and text label).
+This experiment tests: 
 
-It is used to verify:
+- whether [`alembic`](https://alembic.sqlalchemy.org) migrations can be tested under [`pytest`](https://pytest.org), 
+  using [`pytest-alembic`](https://pytest-alembic.readthedocs.io/en/latest/).
+- CRUD operations for SQLAlchemy models
 
-- a set of [Alembic migrations](https://alembic.sqlalchemy.org) can be tested using [pytest](https://pytest.org) and 
-  [pytest-alembic](https://pytest-alembic.readthedocs.io/en/latest/)
-- CRUD operations for SQLAlchemy models can be tested
+There are two versions of these experiments:
+
+- [version 1](https://github.com/felnne/pytest-alembic-experiments/releases/tag/v0.1.0) uses a very simple, generic 
+  schema (single table with auto-incrementing ID and text label fields)
+- [version 2](https://github.com/felnne/pytest-alembic-experiments/releases/tag/v0.2.0) uses schemas from the BAS 
+  Locations Register project (multiple tables, PostGIS extension, FK relationship, function & trigger, enumerations)
+
+Use version 1 if you want to see how this technique works. Use version 2 if you want to see how it works with a more
+complicated schema.
 
 ## Setup
 
-```
+Requirements:
+
+* Git
+* Python
+* Poetry
+* Postgres with PostGIS extension
+
+```shell
+$ git clone https://github.com/felnne/pytest-alembic-experiments.git
 $ poetry install
-$ echo '/Users/felnne/Projects/_scratch/2023/pytest-alembic-exp/src' > .venv/lib/python3.8/site-packages/coke.pth
+# this is not normally necessary, but for whatever reason Poetry won't recognise the local package and install it
+$ echo ~/pytest-alembic-exp/src' > .venv/lib/python3.8/site-packages/coke.pth
 $ psql -d postgres -c 'CREATE DATABASE pytest_alembic;'
 ```
 
 Check things work manually:
 
 ```
-$ APP_DB_DSN=postgresql://felnne@localhost/pytest_alembic poetry run alembic upgrade head
-$ SQLALCHEMY_SILENCE_UBER_WARNING=1 APP_DB_DSN=postgresql://felnne@localhost/pytest_alembic poetry run python -m coke
-$ APP_DB_DSN=postgresql://felnne@localhost/pytest_alembic poetry run alembic downgrade base
+$ APP_DB_DSN=postgresql://$user@localhost/pytest_alembic poetry run alembic upgrade head
+$ SQLALCHEMY_SILENCE_UBER_WARNING=1 APP_DB_DSN=postgresql://$user@localhost/pytest_alembic poetry run python -m coke
+$ APP_DB_DSN=postgresql://$user@localhost/pytest_alembic poetry run alembic downgrade base
 ```
 
 Reset DB:
@@ -37,7 +54,7 @@ $ psql -d postgres -c 'DROP DATABASE IF EXISTS pytest_alembic;' && psql -d postg
 Check DB DSN environment variable set correctly:
 
 ```
-$ APP_DB_DSN=postgresql://felnne@localhost/pytest_alembic poetry run python -m coke.config
+$ APP_DB_DSN=postgresql://$user@localhost/pytest_alembic poetry run python -m coke.config
 ```
 
 ## Usage
@@ -45,12 +62,13 @@ $ APP_DB_DSN=postgresql://felnne@localhost/pytest_alembic poetry run python -m c
 Locally:
 
 ```
-$ APP_DB_DSN=postgresql://felnne@localhost/pytest_alembic SQLALCHEMY_SILENCE_UBER_WARNING=1 poetry run pytest
+$ APP_DB_DSN=postgresql://$user@localhost/pytest_alembic SQLALCHEMY_SILENCE_UBER_WARNING=1 poetry run pytest
 ```
 
 CI:
 
-- commits to this repository will trigger GitLab CI to run tests using a service container, see `.gitlab-ci.yml`
+- commits to this repository will trigger GitLab CI to run tests using a service container, see `.gitlab-ci.yml` (if 
+  using GitLab)
 
 ## Notes
 
@@ -89,8 +107,8 @@ CI:
 [1]
 
 ```
-$ APP_DB_DSN=postgresql://felnne@localhost/pytest_alembic poetry run alembic upgrade head
-$ APP_DB_DSN=postgresql://felnne@localhost/pytest_alembic poetry run alembic revision --autogenerate
+$ APP_DB_DSN=postgresql://$user@localhost/pytest_alembic poetry run alembic upgrade head
+$ APP_DB_DSN=postgresql://$user@localhost/pytest_alembic poetry run alembic revision --autogenerate
 ```
 
 If SQLAlchemy models are not as up to date as the Alembic models, the upgrade/downgrade steps will be flipped around.
@@ -104,8 +122,9 @@ If SQLAlchemy models are not as up to date as the Alembic models, the upgrade/do
   - where Alembic generates SQL to run externally 
 - [x]  DSN is defined multiple times [1]
 - [x]  GitLab CI
-- [ ]  Pytest-alembic [experimental tests](http://pytest-alembic.readthedocs.io/en/latest/experimental_tests.html)
 - [x]  More realistic tests (i.e. from locations register)
+- [x]  review 
+  [Pytest-alembic experimental tests](http://pytest-alembic.readthedocs.io/en/latest/experimental_tests.html)
 
 ## Licence
 
