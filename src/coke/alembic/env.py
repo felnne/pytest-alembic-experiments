@@ -23,6 +23,14 @@ def include_object(object, name, type_, reflected, compare_to) -> bool:
     return True
 
 
+# noinspection PyUnusedLocal
+def include_name(name, type_, parent_names):
+    if type_ == 'table' and (name in ['spatial_ref_sys']):
+        return False
+    else:
+        return True
+
+
 def get_alembic_logging_path() -> Path:
     """Generate path to logging config file from within application package."""
     with resource_path_as_file(resource_path("coke.alembic")) as alembic_path:
@@ -43,6 +51,7 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        include_name=include_name,
         include_object=include_object
     )
 
@@ -69,6 +78,7 @@ def run_migrations_online() -> None:
             compare_type=True,
             compare_server_default=True,
             include_schemas=True,
+            include_name=include_name,
             include_object=include_object
         )
 

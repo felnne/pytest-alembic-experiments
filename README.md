@@ -80,7 +80,12 @@ CI:
   * reviewing the two experimental tests ('all models register on metadata' and 'downgrade leaves no trace')
   * both would likely fail due to the workarounds used to exclude replaceable objects
   * given these tests are experimental, I don't think this is a significant problem
-
+* PostGIS spatial references table:
+  * as a late edition, having excluded all replaceable entities as part of integrating `alembic-utils`, I configured
+    `alembic` to exclude the PostGIS spatial references table as well, rather than needing this to be defined as an
+    app model
+  * this is compatible with the `pytest-alembic` DDL test
+ 
 [1]
 
 ```
